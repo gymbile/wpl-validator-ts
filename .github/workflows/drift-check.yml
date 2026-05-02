@@ -1,0 +1,38 @@
+name: Schema drift check
+
+on:
+  schedule:
+    - cron: '0 14 * * 1'   # Mondays at 14:00 UTC
+  workflow_dispatch:
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get latest tag from gymbile/wpl
+        id: latest-tag
+        run: |
+          latest=$(curl -s https://api.github.com/repos/gymbile/wpl/releases/latest | jq -r .tag_name)
+          echo "latest=$latest" >> $GITHUB_OUTPUT
+      - name: Read vendored version
+        id: vendored
+        run: echo "version=$(cat schema-version.txt)" >> $GITHUB_OUTPUT
+      - name: Diff schema
+        run: |
+          curl -sSL "https://raw.githubusercontent.com/gymbile/wpl/${{ steps.latest-tag.outputs.latest }}/schema/v1.schema.json" -o /tmp/upstream-schema.json
+          if ! diff -q schema/v1.schema.json /tmp/upstream-schema.json > /dev/null; then
+            echo "::error::Vendored schema drifted from gymbile/wpl@${{ steps.latest-tag.outputs.latest }} (vendored version: ${{ steps.vendored.outputs.version }})."
+            exit 1
+          fi
+      - name: Diff conformance
+        run: |
+          # Crude check: each file must match
+          for f in $(find conformance -type f -name '*.json' -o -name '*.md'); do
+            rel="${f#conformance/}"
+            if ! curl -sSfL "https://raw.githubusercontent.com/gymbile/wpl/${{ steps.latest-tag.outputs.latest }}/conformance/$rel" | diff -q - "$f" > /dev/null 2>&1; then
+              echo "::warning::Conformance file drifted: $rel"
+              drifted=1
+            fi
+          done
+          [ "${drifted:-0}" = 1 ] && exit 1 || exit 0
