@@ -7,8 +7,10 @@ export interface RunPass2Options extends ValidationOptions {
 
 export function runPass2(input: unknown, opts: RunPass2Options): ValidationError[] {
   const errors: ValidationError[] = [];
+  const options: ValidationOptions = {};
+  if (opts.catalog !== undefined) options.catalog = opts.catalog;
   const ctx: WalkContext = {
-    options: { catalog: opts.catalog },
+    options,
     emit: (err) => errors.push(err),
     scope: new Map(),
   };
