@@ -28,16 +28,19 @@ export function walk(input: any, ctx: WalkContext, rules: SemanticRule[]): void 
   const phases = Array.isArray(plan.phases) ? plan.phases : [];
   phases.forEach((phase: any, pi: number) => {
     const phasePath = `/plan/phases/${pi}`;
+    ctx.scope.set('cur:phase', phase?.id);
     for (const r of rules) r.enterPhase?.(ctx, phase, phasePath);
 
     const weeks = Array.isArray(phase.weeks) ? phase.weeks : [];
     weeks.forEach((week: any, wi: number) => {
       const weekPath = `${phasePath}/weeks/${wi}`;
+      ctx.scope.set('cur:week', week?.id);
       for (const r of rules) r.enterWeek?.(ctx, week, weekPath);
 
       const days = Array.isArray(week.days) ? week.days : [];
       days.forEach((day: any, di: number) => {
         const dayPath = `${weekPath}/days/${di}`;
+        ctx.scope.set('cur:day', day?.id);
         for (const r of rules) r.enterDay?.(ctx, day, dayPath);
 
         const blocks = Array.isArray(day.blocks) ? day.blocks : [];
