@@ -1,0 +1,54 @@
+{
+  "name": "@gymbile/wpl-validator",
+  "version": "0.0.0",
+  "description": "Reference TypeScript validator for WPL (Wellness Plan Language) — JSON Schema + semantic invariants",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepare": "tsup",
+    "prepublishOnly": "npm run test && npm run build"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gymbile/wpl-validator-ts.git"
+  },
+  "homepage": "https://github.com/gymbile/wpl-validator-ts",
+  "bugs": "https://github.com/gymbile/wpl-validator-ts/issues",
+  "keywords": ["wpl", "wellness", "json-schema", "validator", "ajv"],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^3.0.0"
+  }
+}
