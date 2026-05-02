@@ -13,19 +13,44 @@
       "rules": [
         {
           "id": "rule_1",
-          "condition": { "field": "age", "operator": "gt", "value": 60 },
+          "condition": {
+            "field": "age",
+            "op": "gt",
+            "value": 60
+          },
           "actions": [
-            { "type": "set_world_on_fire", "scope": "plan" }
+            {
+              "type": "set_world_on_fire",
+              "scope": "plan"
+            }
           ]
         }
-      ]
+      ],
+      "inputs": []
     },
     "phases": [
       {
-        "id": "phase_1", "name": "P1", "order": 1,
-        "duration": { "value": 1, "unit": "weeks" },
+        "id": "phase_1",
+        "name": "P1",
+        "order": 1,
+        "duration": {
+          "value": 1,
+          "unit": "weeks"
+        },
         "weeks": [
-          { "id": "week_1", "days": [{ "id": "day_1", "name": "D1", "type": "rest" }] }
+          {
+            "id": "week_1",
+            "days": [
+              {
+                "id": "day_1",
+                "name": "D1",
+                "type": "rest",
+                "day_of_week": 1
+              }
+            ],
+            "name": "Week 1",
+            "order": 1
+          }
         ]
       }
     ]

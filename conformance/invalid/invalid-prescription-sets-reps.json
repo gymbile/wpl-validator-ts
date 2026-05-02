@@ -9,32 +9,45 @@
     "metadata": {},
     "goals": [],
     "requirements": {},
-    "personalization": { "rules": [] },
     "phases": [
       {
-        "id": "phase_1", "name": "P1", "order": 1,
-        "duration": { "value": 1, "unit": "weeks" },
+        "id": "phase_1",
+        "name": "P1",
+        "order": 1,
+        "duration": {
+          "value": 1,
+          "unit": "weeks"
+        },
         "weeks": [
           {
             "id": "week_1",
             "days": [
               {
-                "id": "day_1", "name": "D1", "type": "workout",
+                "id": "day_1",
+                "name": "D1",
+                "type": "training",
                 "blocks": [
                   {
-                    "id": "main", "type": "main", "order": 1,
+                    "id": "main",
+                    "type": "main",
+                    "order": 1,
                     "activities": [
                       {
                         "id": "act_1",
                         "type": "exercise",
                         "exercise_ref": "push_up",
-                        "prescription": { "type": "sets_reps" }
+                        "prescription": {
+                          "type": "sets_reps"
+                        }
                       }
                     ]
                   }
-                ]
+                ],
+                "day_of_week": 1
               }
-            ]
+            ],
+            "name": "Week 1",
+            "order": 1
           }
         ]
       }

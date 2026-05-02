@@ -9,21 +9,41 @@
     "metadata": {},
     "goals": [],
     "requirements": {},
-    "personalization": { "rules": [] },
     "progress": {
       "checkpoints": [],
       "points_system": {
+        "enabled": true,
         "rules": [
-          { "action": "complete_workout", "points": -10 }
+          {
+            "action": "complete_workout",
+            "points": -10
+          }
         ]
       }
     },
     "phases": [
       {
-        "id": "phase_1", "name": "P1", "order": 1,
-        "duration": { "value": 1, "unit": "weeks" },
+        "id": "phase_1",
+        "name": "P1",
+        "order": 1,
+        "duration": {
+          "value": 1,
+          "unit": "weeks"
+        },
         "weeks": [
-          { "id": "week_1", "days": [{ "id": "day_1", "name": "D1", "type": "rest" }] }
+          {
+            "id": "week_1",
+            "days": [
+              {
+                "id": "day_1",
+                "name": "D1",
+                "type": "rest",
+                "day_of_week": 1
+              }
+            ],
+            "name": "Week 1",
+            "order": 1
+          }
         ]
       }
     ]
