@@ -1,4 +1,4 @@
-import type { SemanticRule } from '../walker.js';
+import type { SemanticRule, WalkContext } from '../walker.js';
 
 const ACTION_TYPES = new Set([
   'modify_intensity', 'add_warmup_time', 'increase_rest', 'reduce_sets', 'reduce_reps',
@@ -6,42 +6,68 @@ const ACTION_TYPES = new Set([
 ]);
 const ACTION_SCOPES = new Set(['activity', 'block', 'day', 'week', 'phase', 'plan']);
 
+function emitInvalidCondition(ctx: WalkContext, path: string, message: string): void {
+  ctx.emit({
+    path,
+    code: 'INVALID_PERSONALIZATION_RULE',
+    message,
+    severity: 'error',
+    meta: { reason: 'invalid_condition' },
+  });
+}
+
+function validateCondition(ctx: WalkContext, cond: unknown, rulePath: string): void {
+  if (typeof cond !== 'object' || cond === null) {
+    emitInvalidCondition(ctx, rulePath, 'condition must be an object');
+    return;
+  }
+  const c = cond as { operator?: unknown; conditions?: unknown; field?: unknown; op?: unknown };
+  // CompoundCondition: { operator: "and"|"or", conditions: [...] }
+  if (c.operator !== undefined || Array.isArray(c.conditions)) {
+    if (c.operator !== 'and' && c.operator !== 'or') {
+      emitInvalidCondition(ctx, rulePath, "compound condition operator must be 'and' or 'or'");
+      return;
+    }
+    if (!Array.isArray(c.conditions) || c.conditions.length === 0) {
+      emitInvalidCondition(ctx, rulePath, 'compound condition requires non-empty conditions array');
+      return;
+    }
+    for (const inner of c.conditions) {
+      validateCondition(ctx, inner, rulePath);
+    }
+    return;
+  }
+  // SimpleCondition: { field, op, value }
+  if (c.field === undefined && c.op === undefined) {
+    emitInvalidCondition(ctx, rulePath, "condition must have 'field' or 'op'");
+  }
+}
+
 export const invalidPersonalizationRule: SemanticRule = {
   code: 'INVALID_PERSONALIZATION_RULE',
   enterRule(ctx, rule, path) {
-    // condition shape
-    const cond = rule?.condition;
+    // condition shape (recursive)
+    const cond = (rule as { condition?: unknown } | null | undefined)?.condition;
     if (cond !== undefined) {
-      if (typeof cond !== 'object' || cond === null) {
-        ctx.emit({ path, code: 'INVALID_PERSONALIZATION_RULE', message: 'condition must be an object', severity: 'error', meta: { reason: 'invalid_condition' } });
-      } else if (cond.operator !== undefined || Array.isArray(cond.conditions)) {
-        // CompoundCondition shape: { operator: "and"|"or", conditions: [...] }
-        if (cond.operator !== 'and' && cond.operator !== 'or') {
-          ctx.emit({ path, code: 'INVALID_PERSONALIZATION_RULE', message: "compound condition operator must be 'and' or 'or'", severity: 'error', meta: { reason: 'invalid_condition' } });
-        } else if (!Array.isArray(cond.conditions) || cond.conditions.length === 0) {
-          ctx.emit({ path, code: 'INVALID_PERSONALIZATION_RULE', message: 'compound condition requires non-empty conditions array', severity: 'error', meta: { reason: 'invalid_condition' } });
-        }
-      } else if (cond.field === undefined && cond.op === undefined) {
-        // SimpleCondition shape: { field, op, value }
-        ctx.emit({ path, code: 'INVALID_PERSONALIZATION_RULE', message: "condition must have 'field' or 'op'", severity: 'error', meta: { reason: 'invalid_condition' } });
-      }
+      validateCondition(ctx, cond, path);
     }
 
     // actions list
-    const actions = rule?.actions;
+    const actions = (rule as { actions?: unknown } | null | undefined)?.actions;
     if (Array.isArray(actions) && actions.length === 0) {
       ctx.emit({ path, code: 'INVALID_PERSONALIZATION_RULE', message: 'actions must be a non-empty list', severity: 'error', meta: { reason: 'actions_must_be_non_empty_list' } });
     }
 
     // each action
     if (Array.isArray(actions)) {
-      actions.forEach((action: any, i: number) => {
+      actions.forEach((action: unknown, i: number) => {
         const aPath = `${path}/actions/${i}`;
-        if (action?.type !== undefined && !ACTION_TYPES.has(action.type)) {
-          ctx.emit({ path: aPath, code: 'INVALID_PERSONALIZATION_RULE', message: `invalid action type '${action.type}'`, severity: 'error', meta: { reason: 'invalid_action_type', field: 'type', value: action.type } });
+        const a = (action ?? {}) as { type?: unknown; scope?: unknown };
+        if (a.type !== undefined && (typeof a.type !== 'string' || !ACTION_TYPES.has(a.type))) {
+          ctx.emit({ path: aPath, code: 'INVALID_PERSONALIZATION_RULE', message: `invalid action type '${String(a.type)}'`, severity: 'error', meta: { reason: 'invalid_action_type', field: 'type', value: a.type } });
         }
-        if (action?.scope !== undefined && !ACTION_SCOPES.has(action.scope)) {
-          ctx.emit({ path: aPath, code: 'INVALID_PERSONALIZATION_RULE', message: `invalid action scope '${action.scope}'`, severity: 'error', meta: { reason: 'invalid_action_scope', field: 'scope', value: action.scope } });
+        if (a.scope !== undefined && (typeof a.scope !== 'string' || !ACTION_SCOPES.has(a.scope))) {
+          ctx.emit({ path: aPath, code: 'INVALID_PERSONALIZATION_RULE', message: `invalid action scope '${String(a.scope)}'`, severity: 'error', meta: { reason: 'invalid_action_scope', field: 'scope', value: a.scope } });
         }
       });
     }

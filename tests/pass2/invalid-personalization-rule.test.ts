@@ -78,6 +78,32 @@ describe('rule: INVALID_PERSONALIZATION_RULE', () => {
     expect(errors[0]?.meta?.reason).toBe('invalid_condition');
   });
 
+  it('flags nested CompoundCondition with invalid inner operator', () => {
+    const errors = runPass2(wrap({
+      id: 'rule_1',
+      condition: {
+        operator: 'and',
+        conditions: [{ operator: 'xor', conditions: [{ field: 'age', op: 'gt', value: 60 }] }],
+      },
+      actions: [{ type: 'reduce_reps', scope: 'activity' }],
+    }), { rules: [invalidPersonalizationRule] });
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0]?.meta?.reason).toBe('invalid_condition');
+  });
+
+  it('flags nested CompoundCondition with malformed inner leaf', () => {
+    const errors = runPass2(wrap({
+      id: 'rule_1',
+      condition: {
+        operator: 'and',
+        conditions: [{ value: 'x' }],
+      },
+      actions: [{ type: 'reduce_reps', scope: 'activity' }],
+    }), { rules: [invalidPersonalizationRule] });
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0]?.meta?.reason).toBe('invalid_condition');
+  });
+
   it('does not flag a valid rule', () => {
     const errors = runPass2(wrap({
       id: 'rule_1',
