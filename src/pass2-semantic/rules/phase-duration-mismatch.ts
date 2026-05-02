@@ -3,8 +3,8 @@ import type { SemanticRule } from '../walker.js';
 export const phaseDurationMismatch: SemanticRule = {
   code: 'PHASE_DURATION_MISMATCH',
   enterPhase(ctx, phase, path) {
-    const dur = phase?.duration;
-    const weeks = Array.isArray(phase?.weeks) ? phase.weeks : [];
+    const dur = phase.duration;
+    const weeks = Array.isArray(phase.weeks) ? phase.weeks : [];
     if (!dur || typeof dur !== 'object' || weeks.length === 0) return;
 
     const value = dur.value;

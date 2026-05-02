@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { runPass2 } from '../../src/pass2-semantic';
+import { runPass2, type WalkContext } from '../../src/pass2-semantic';
 
 describe('Pass 2 walker', () => {
   it('visits plan, phases, weeks, days, blocks, activities in order', () => {
@@ -46,7 +46,7 @@ describe('Pass 2 walker', () => {
   it('emits errors collected via ctx.emit', () => {
     const rule = {
       code: 'EMPTY_PHASES_FOR_TYPE' as const,
-      enterPlan: (ctx: any) => ctx.emit({
+      enterPlan: (ctx: WalkContext) => ctx.emit({
         path: '/plan/phases',
         code: 'EMPTY_PHASES_FOR_TYPE',
         message: 'no phases',

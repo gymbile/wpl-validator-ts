@@ -14,8 +14,9 @@ export const unresolvedRef: SemanticRule = {
     if (!catalog) return;
 
     for (const { field, kind, catalogKey } of REF_KINDS) {
-      const refValue = activity?.[field];
+      const refValue = activity[field];
       if (refValue === undefined) continue;
+      if (typeof refValue !== 'string') continue;
 
       const catalogSet = catalog[catalogKey];
       const resolved = catalogSet?.has(refValue);

@@ -5,9 +5,10 @@ const VALID_TYPES = new Set(['sets_reps', 'time', 'distance', 'amrap', 'continuo
 export const invalidPrescription: SemanticRule = {
   code: 'INVALID_PRESCRIPTION',
   enterActivity(ctx, activity, path) {
-    if (activity?.type !== 'exercise') return;
-    const p = activity.prescription;
-    if (!p || typeof p !== 'object') return;
+    if (activity.type !== 'exercise') return;
+    const pRaw = activity.prescription;
+    if (typeof pRaw !== 'object' || pRaw === null) return;
+    const p = pRaw as { type?: unknown; sets?: unknown; reps?: unknown; duration?: unknown };
 
     const presPath = `${path}/prescription`;
     const t = p.type;
@@ -15,8 +16,8 @@ export const invalidPrescription: SemanticRule = {
       ctx.emit({ path: presPath, code: 'INVALID_PRESCRIPTION', message: "prescription missing 'type'", severity: 'error', meta: { reason: 'missing_type' } });
       return;
     }
-    if (!VALID_TYPES.has(t)) {
-      ctx.emit({ path: presPath, code: 'INVALID_PRESCRIPTION', message: `unknown prescription type '${t}'`, severity: 'error', meta: { reason: 'unknown_type', prescription_type: t } });
+    if (typeof t !== 'string' || !VALID_TYPES.has(t)) {
+      ctx.emit({ path: presPath, code: 'INVALID_PRESCRIPTION', message: `unknown prescription type '${String(t)}'`, severity: 'error', meta: { reason: 'unknown_type', prescription_type: t } });
       return;
     }
     if (t === 'sets_reps' && p.sets === undefined && p.reps === undefined) {

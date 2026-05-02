@@ -14,10 +14,10 @@ function check(
   ctx: WalkContext,
   scopeKey: string,
   scopeLabel: string,
-  id: string | undefined,
+  id: unknown,
   path: string,
 ): void {
-  if (!id) return;
+  if (typeof id !== 'string' || !id) return;
   const m = getSeen(ctx, scopeKey);
   const first = m.seen.get(id);
   if (first) {
