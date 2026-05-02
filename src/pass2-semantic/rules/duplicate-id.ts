@@ -10,6 +10,11 @@ function getSeen(ctx: WalkContext, key: string): SeenMap {
   return ctx.scope.get(key) as SeenMap;
 }
 
+function getScopeId(ctx: WalkContext, key: string): string {
+  const v = ctx.scope.get(key);
+  return typeof v === 'string' ? v : '';
+}
+
 function check(
   ctx: WalkContext,
   scopeKey: string,
@@ -48,38 +53,26 @@ export const duplicateId: SemanticRule = {
   },
 
   enterPhase(ctx, phase, path) {
-    check(ctx, 'dup:plan', 'plan', phase?.id, path);
+    check(ctx, 'dup:plan', 'plan', phase.id, path);
   },
 
   enterWeek(ctx, week, path) {
-    const phaseId = parsePhaseIdFromPath(ctx, path);
-    check(ctx, `dup:phase:${phaseId}`, `phase:${phaseId}`, week?.id, path);
+    const phaseId = getScopeId(ctx, 'cur:phase');
+    check(ctx, `dup:phase:${phaseId}`, `phase:${phaseId}`, week.id, path);
   },
 
   enterDay(ctx, day, path) {
-    const weekId = parseWeekIdFromPath(ctx, path);
-    check(ctx, `dup:week:${weekId}`, `week:${weekId}`, day?.id, path);
+    const weekId = getScopeId(ctx, 'cur:week');
+    check(ctx, `dup:week:${weekId}`, `week:${weekId}`, day.id, path);
   },
 
   enterBlock(ctx, block, path) {
-    const dayId = parseDayIdFromPath(ctx, path);
-    check(ctx, `dup:day-block:${dayId}`, `day:${dayId}`, block?.id, path);
+    const dayId = getScopeId(ctx, 'cur:day');
+    check(ctx, `dup:day-block:${dayId}`, `day:${dayId}`, block.id, path);
   },
 
   enterActivity(ctx, activity, path) {
-    const dayId = parseDayIdFromPath(ctx, path);
-    check(ctx, `dup:day-act:${dayId}`, `day:${dayId}`, activity?.id, path);
+    const dayId = getScopeId(ctx, 'cur:day');
+    check(ctx, `dup:day-act:${dayId}`, `day:${dayId}`, activity.id, path);
   },
 };
-
-// Helpers: extract parent IDs from ctx scope.
-// Walker tracks currentPhase/currentWeek/currentDay in scope as it descends.
-function parsePhaseIdFromPath(ctx: WalkContext, _path: string): string {
-  return (ctx.scope.get('cur:phase') as string) ?? '';
-}
-function parseWeekIdFromPath(ctx: WalkContext, _path: string): string {
-  return (ctx.scope.get('cur:week') as string) ?? '';
-}
-function parseDayIdFromPath(ctx: WalkContext, _path: string): string {
-  return (ctx.scope.get('cur:day') as string) ?? '';
-}
