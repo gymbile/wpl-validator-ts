@@ -13,7 +13,13 @@ jobs:
       - name: Get latest tag from gymbile/wpl
         id: latest-tag
         run: |
-          latest=$(curl -s https://api.github.com/repos/gymbile/wpl/releases/latest | jq -r .tag_name)
+          latest=$(git ls-remote --tags https://github.com/gymbile/wpl.git \
+                   | grep 'refs/tags/v' | grep -v '\^{}' \
+                   | sort -V | tail -1 | awk '{print $2}' | sed 's|refs/tags/||')
+          if [ -z "$latest" ]; then
+            echo "::error::Could not resolve latest tag from gymbile/wpl"
+            exit 1
+          fi
           echo "latest=$latest" >> $GITHUB_OUTPUT
       - name: Read vendored version
         id: vendored
@@ -28,7 +34,7 @@ jobs:
       - name: Diff conformance
         run: |
           # Crude check: each file must match
-          for f in $(find conformance -type f -name '*.json' -o -name '*.md'); do
+          for f in $(find conformance -type f \( -name '*.json' -o -name '*.md' \)); do
             rel="${f#conformance/}"
             if ! curl -sSfL "https://raw.githubusercontent.com/gymbile/wpl/${{ steps.latest-tag.outputs.latest }}/conformance/$rel" | diff -q - "$f" > /dev/null 2>&1; then
               echo "::warning::Conformance file drifted: $rel"
