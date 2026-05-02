@@ -1,0 +1,45 @@
+import { describe, it, expect } from 'vitest';
+import { validate } from '../src/index';
+
+describe('validate (entry point)', () => {
+  it('returns valid: true for a minimal valid plan', () => {
+    const plan = {
+      $schema: 'https://wpl.dev/schemas/wpl/v1.schema.json',
+      version: '1.0.0',
+      plan: {
+        id: 'plan_test',
+        name: 'Test',
+        type: 'workout',
+        visibility: 'private',
+        metadata: {},
+        goals: [],
+        phases: [
+          {
+            id: 'phase_1',
+            name: 'P1',
+            order: 1,
+            duration: { value: 1, unit: 'weeks' },
+            weeks: [
+              {
+                id: 'week_1',
+                name: 'W1',
+                order: 1,
+                days: [{ id: 'day_1', day_of_week: 1, type: 'rest' }],
+              },
+            ],
+          },
+        ],
+      },
+    };
+    const result = validate(plan);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
+  });
+
+  it('returns valid: false with SCHEMA_VIOLATION for malformed input', () => {
+    const plan = { not_a_wpl_plan: true };
+    const result = validate(plan);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.code === 'SCHEMA_VIOLATION')).toBe(true);
+  });
+});
