@@ -54,7 +54,7 @@ describe('rule: INVALID_PERSONALIZATION_RULE', () => {
   it('does not flag a valid rule', () => {
     const errors = runPass2(wrap({
       id: 'rule_1',
-      condition: { field: 'age', operator: 'gt', value: 60 },
+      condition: { field: 'age', op: 'gt', value: 60 },
       actions: [{ type: 'reduce_reps', scope: 'activity' }],
     }), { rules: [invalidPersonalizationRule] });
     expect(errors).toEqual([]);

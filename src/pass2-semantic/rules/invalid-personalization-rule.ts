@@ -14,8 +14,8 @@ export const invalidPersonalizationRule: SemanticRule = {
     if (cond !== undefined) {
       if (typeof cond !== 'object' || cond === null) {
         ctx.emit({ path, code: 'INVALID_PERSONALIZATION_RULE', message: 'condition must be an object', severity: 'error', meta: { reason: 'invalid_condition' } });
-      } else if (cond.field === undefined && cond.operator === undefined) {
-        ctx.emit({ path, code: 'INVALID_PERSONALIZATION_RULE', message: "condition must have 'field' or 'operator'", severity: 'error', meta: { reason: 'invalid_condition' } });
+      } else if (cond.field === undefined && cond.op === undefined) {
+        ctx.emit({ path, code: 'INVALID_PERSONALIZATION_RULE', message: "condition must have 'field' or 'op'", severity: 'error', meta: { reason: 'invalid_condition' } });
       }
     }
 
