@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.0.1] — 2026-05-02
+
 ### Fixed
 - `INVALID_PERSONALIZATION_RULE` no longer falsely flags valid CompoundCondition shapes (`{ operator: "and"|"or", conditions: [...] }`). Previously the rule only recognized SimpleCondition (`{ field, op, value }`), so any compound condition was incorrectly reported as `invalid_condition`.
 
