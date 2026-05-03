@@ -7,6 +7,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-05-03
+
+### Changed
+- Sync vendored schema + conformance suite from `gymbile/wpl@v1.4.0` (was `v1.3.0`).
+
+### Notes
+Schema v1.4.0 adds per-bodyweight scaling for macros (`unit: g_per_kg`), calories (`unit: kcal_per_kg | multiplier_of_tdee`), and load (`type: percentage_bodyweight`); plus documented controlled-vocabulary prefixes for `PersonalizationInput.source` (user.*/wellness.*/device.*/plan.*) and `Contraindication.condition` (icd10:/snomed:/acsm:/acog:). All additive.
+
 ## [1.2.0] — 2026-05-03
 
 ### Changed
