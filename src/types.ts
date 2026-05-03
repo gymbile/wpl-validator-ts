@@ -7,7 +7,8 @@ export type ErrorCode =
   | 'INVALID_PRESCRIPTION'
   | 'INVALID_PERSONALIZATION_RULE'
   | 'INVALID_POINTS_RULE'
-  | 'PHASE_DURATION_MISMATCH';
+  | 'PHASE_DURATION_MISMATCH'
+  | 'CYCLIC_SUBPLAN';
 
 export type Severity = 'error' | 'warning';
 

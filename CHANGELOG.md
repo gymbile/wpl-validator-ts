@@ -7,6 +7,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-05-03
+
+### Added
+- Pass-2 rule `CYCLIC_SUBPLAN`. Detects sub-plan reference self-cycles (a `SubPlanActivity` whose `sub_plan_ref` equals the containing plan's `id`). Cross-plan cycles deferred pending a `sub_plans` resolution map in the validate API.
+- `'CYCLIC_SUBPLAN'` added to the public `ErrorCode` union (was previously dropped in 1.0.2 after sitting unused).
+
+### Changed
+- Sync vendored schema + conformance suite from `gymbile/wpl@v1.5.0` (was `v1.4.0`).
+
+### Notes
+89/89 tests pass.
+
 ## [1.3.0] — 2026-05-03
 
 ### Changed
