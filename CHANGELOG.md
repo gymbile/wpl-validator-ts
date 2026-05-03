@@ -7,6 +7,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-05-03
+
+### Changed
+- Sync vendored schema + conformance suite from `gymbile/wpl@v1.3.0` (was `v1.2.0`).
+
+### Notes
+Schema v1.3.0 adds optional `primary_muscles`/`secondary_muscles`/`movement_pattern` on `ExerciseActivity`, plan-level `athlete_thresholds`, and `intensity.zone_model` on cardio. Pure schema-driven validation; no new TS-side rules. ajv's native `oneOf` behavior already matches the conformance contract for nested-enum failures inside `Activity` branches. 84/84 tests pass.
+
 ## [1.1.0] — 2026-05-03
 
 ### Changed
