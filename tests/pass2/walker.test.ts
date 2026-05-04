@@ -16,7 +16,7 @@ describe('Pass 2 walker', () => {
 
     const plan = {
       $schema: 'https://wpl.dev/schemas/wpl/v1.schema.json',
-      version: '1.0.0',
+      version: '1.6.0',
       plan: {
         id: 'p1', name: 'P', type: 'workout', visibility: 'private',
         metadata: {}, goals: [], phases: [
@@ -55,7 +55,7 @@ describe('Pass 2 walker', () => {
     };
     const plan = {
       $schema: 'https://wpl.dev/schemas/wpl/v1.schema.json',
-      version: '1.0.0',
+      version: '1.6.0',
       plan: { id: 'p1', name: 'P', type: 'workout', visibility: 'private', metadata: {}, goals: [], phases: [] },
     };
     const errors = runPass2(plan, { rules: [rule] });

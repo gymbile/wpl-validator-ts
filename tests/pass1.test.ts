@@ -5,7 +5,7 @@ describe('Pass 1 — schema validation', () => {
   it('returns no errors for a minimal valid plan', () => {
     const plan = {
       $schema: 'https://wpl.dev/schemas/wpl/v1.schema.json',
-      version: '1.0.0',
+      version: '1.6.0',
       plan: {
         id: 'plan_test',
         name: 'Test',
@@ -38,7 +38,7 @@ describe('Pass 1 — schema validation', () => {
   it('emits SCHEMA_VIOLATION with RFC 6901 path for unknown enum', () => {
     const plan = {
       $schema: 'https://wpl.dev/schemas/wpl/v1.schema.json',
-      version: '1.0.0',
+      version: '1.6.0',
       plan: {
         id: 'plan_test',
         name: 'Test',
@@ -61,7 +61,7 @@ describe('Pass 1 — schema validation', () => {
   it('emits SCHEMA_VIOLATION for missing required field', () => {
     const plan = {
       $schema: 'https://wpl.dev/schemas/wpl/v1.schema.json',
-      version: '1.0.0',
+      version: '1.6.0',
       plan: {
         // missing `id`
         name: 'No ID',

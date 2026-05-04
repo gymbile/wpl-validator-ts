@@ -5,7 +5,7 @@ describe('validate (entry point)', () => {
   it('returns valid: true for a minimal valid plan', () => {
     const plan = {
       $schema: 'https://wpl.dev/schemas/wpl/v1.schema.json',
-      version: '1.0.0',
+      version: '1.6.0',
       plan: {
         id: 'plan_test',
         name: 'Test',
