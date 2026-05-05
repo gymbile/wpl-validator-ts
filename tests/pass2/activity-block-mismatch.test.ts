@@ -26,16 +26,16 @@ function makeBlock(blockType: string, activityType: string) {
 describe('rule: ACTIVITY_BLOCK_MISMATCH', () => {
   // --- violation cases ---
 
-  it('emits error for exercise in cooldown block', () => {
-    const errors = runPass2(makeBlock('cooldown', 'exercise'), { rules: [activityBlockMismatch] });
+  it('emits error for nutrition in cooldown block', () => {
+    const errors = runPass2(makeBlock('cooldown', 'nutrition'), { rules: [activityBlockMismatch] });
     expect(errors).toHaveLength(1);
     expect(errors[0]).toMatchObject({
       code: 'ACTIVITY_BLOCK_MISMATCH',
       path: '/plan/phases/0/weeks/0/days/0/blocks/0/activities/0',
       severity: 'error',
-      meta: { activity_type: 'exercise', block_type: 'cooldown' },
+      meta: { activity_type: 'nutrition', block_type: 'cooldown' },
     });
-    expect(errors[0]!.message).toContain("'exercise'");
+    expect(errors[0]!.message).toContain("'nutrition'");
     expect(errors[0]!.message).toContain("'cooldown'");
   });
 
@@ -163,9 +163,9 @@ describe('rule: ACTIVITY_BLOCK_MISMATCH', () => {
   // --- meta includes allowed list ---
 
   it('includes allowed list in meta', () => {
-    const errors = runPass2(makeBlock('cooldown', 'exercise'), { rules: [activityBlockMismatch] });
+    const errors = runPass2(makeBlock('cooldown', 'nutrition'), { rules: [activityBlockMismatch] });
     expect(errors[0]!.meta!.allowed).toContain('cardio');
     expect(errors[0]!.meta!.allowed).toContain('recovery');
-    expect(errors[0]!.meta!.allowed).not.toContain('exercise');
+    expect(errors[0]!.meta!.allowed).not.toContain('nutrition');
   });
 });

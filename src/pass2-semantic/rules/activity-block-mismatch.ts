@@ -5,9 +5,9 @@ import type { SemanticRule } from '../walker.js';
  * `simple` and `sub_plan` are accepted everywhere as escape hatches.
  */
 const ALLOWED: Record<string, ReadonlySet<string>> = {
-  warmup: new Set(['cardio', 'recovery', 'simple', 'sub_plan']),
+  warmup: new Set(['exercise', 'cardio', 'recovery', 'simple', 'sub_plan']),
   main: new Set(['exercise', 'cardio', 'nutrition', 'meditation', 'recovery', 'habit', 'simple', 'sub_plan']),
-  cooldown: new Set(['cardio', 'recovery', 'meditation', 'simple', 'sub_plan']),
+  cooldown: new Set(['exercise', 'cardio', 'recovery', 'meditation', 'simple', 'sub_plan']),
   nutrition: new Set(['nutrition', 'simple', 'sub_plan']),
   meditation: new Set(['meditation', 'simple', 'sub_plan']),
   education: new Set(['simple', 'habit', 'sub_plan']),
