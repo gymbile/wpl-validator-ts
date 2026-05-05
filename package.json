@@ -1,6 +1,6 @@
 {
   "name": "@gymbile/wpl-validator",
-  "version": "1.6.0",
+  "version": "1.6.5",
   "description": "Reference TypeScript validator for WPL (Wellness Plan Language) — JSON Schema + semantic invariants",
   "type": "module",
   "main": "./dist/index.cjs",

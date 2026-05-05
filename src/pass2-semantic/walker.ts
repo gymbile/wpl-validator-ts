@@ -38,6 +38,7 @@ export interface WalkDay {
 
 export interface WalkBlock {
   id?: unknown;
+  type?: unknown;
   activities?: unknown;
 }
 

@@ -8,7 +8,8 @@ export type ErrorCode =
   | 'INVALID_PERSONALIZATION_RULE'
   | 'INVALID_POINTS_RULE'
   | 'PHASE_DURATION_MISMATCH'
-  | 'CYCLIC_SUBPLAN';
+  | 'CYCLIC_SUBPLAN'
+  | 'ACTIVITY_BLOCK_MISMATCH';
 
 export type Severity = 'error' | 'warning';
 
