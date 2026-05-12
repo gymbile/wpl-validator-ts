@@ -85,7 +85,7 @@ describe('rule: DUPLICATE_ID', () => {
     }), { rules: [duplicateId] });
 
     expect(errors).toHaveLength(1);
-    expect(errors[0]!.meta?.scope).toBe('day:day_1');
+    expect(errors[0]!.meta?.scope).toBe('phase:phase_1/week:week_1/day:day_1');
   });
 
   it('detects duplicate activity.id within day (across blocks)', () => {
@@ -109,8 +109,86 @@ describe('rule: DUPLICATE_ID', () => {
     expect(errors).toHaveLength(1);
     expect(errors[0]!.meta).toMatchObject({
       duplicate_id: 'a1',
-      scope: 'day:day_1',
+      scope: 'phase:phase_1/week:week_1/day:day_1',
     });
+  });
+
+  it('does NOT flag identical block/activity IDs in same-named days of different weeks', () => {
+    // Regression: day IDs (`day_1`, `day_2`) are positional within their
+    // week and repeat across weeks. A 4-week plan with daily warmup_block
+    // is structurally correct but used to flood with DUPLICATE_ID because
+    // the rule scoped to day:day_1 only.
+    const errors = runPass2(wrap({
+      id: 'p', name: 'P', type: 'workout', visibility: 'private', metadata: {}, goals: [],
+      phases: [{
+        id: 'phase_1', name: 'P1', order: 1, duration: { value: 2, unit: 'weeks' },
+        weeks: [
+          {
+            id: 'week_1',
+            days: [{
+              id: 'day_1', name: 'Mon', type: 'workout',
+              blocks: [
+                { id: 'warmup_block', type: 'warmup', order: 1, activities: [
+                  { id: 'activity_1', type: 'cardio', name: 'cycling', duration_minutes: 5 },
+                ] },
+                { id: 'main_block', type: 'main', order: 2, activities: [
+                  { id: 'activity_2', type: 'exercise', name: 'bench_press' },
+                ] },
+              ],
+            }],
+          },
+          {
+            id: 'week_2',
+            days: [{
+              id: 'day_1', name: 'Mon', type: 'workout',
+              blocks: [
+                { id: 'warmup_block', type: 'warmup', order: 1, activities: [
+                  { id: 'activity_1', type: 'cardio', name: 'cycling', duration_minutes: 5 },
+                ] },
+                { id: 'main_block', type: 'main', order: 2, activities: [
+                  { id: 'activity_2', type: 'exercise', name: 'bench_press' },
+                ] },
+              ],
+            }],
+          },
+        ],
+      }],
+    }), { rules: [duplicateId] });
+    expect(errors).toEqual([]);
+  });
+
+  it('still flags duplicate block IDs within the SAME day', () => {
+    const errors = runPass2(wrap({
+      id: 'p', name: 'P', type: 'workout', visibility: 'private', metadata: {}, goals: [],
+      phases: [{
+        id: 'phase_1', name: 'P1', order: 1, duration: { value: 2, unit: 'weeks' },
+        weeks: [
+          {
+            id: 'week_1',
+            days: [{
+              id: 'day_1', name: 'Mon', type: 'workout',
+              blocks: [
+                { id: 'main_block', type: 'main', order: 1, activities: [] },
+                { id: 'main_block', type: 'cooldown', order: 2, activities: [] },
+              ],
+            }],
+          },
+          {
+            id: 'week_2',
+            days: [{
+              id: 'day_1', name: 'Mon', type: 'workout',
+              blocks: [
+                { id: 'warmup_block', type: 'warmup', order: 1, activities: [] },
+              ],
+            }],
+          },
+        ],
+      }],
+    }), { rules: [duplicateId] });
+    // Exactly one — the within-day duplicate in week 1. Week 2's day_1
+    // / main_block does not collide with week 1's because scope includes week.
+    expect(errors).toHaveLength(1);
+    expect(errors[0]!.meta?.scope).toBe('phase:phase_1/week:week_1/day:day_1');
   });
 
   it('does not emit for unique IDs', () => {

@@ -67,12 +67,24 @@ export const duplicateId: SemanticRule = {
   },
 
   enterBlock(ctx, block, path) {
+    // Day IDs (`day_1`, `day_2`) are positional within their week and
+    // therefore repeat across weeks (week 1 / day 1, week 2 / day 1, ...).
+    // Scope block uniqueness to (phase, week, day) so structurally-correct
+    // multi-week plans do not falsely report DUPLICATE_ID on identical
+    // block IDs like `warmup_block` appearing once per day.
+    const phaseId = getScopeId(ctx, 'cur:phase');
+    const weekId = getScopeId(ctx, 'cur:week');
     const dayId = getScopeId(ctx, 'cur:day');
-    check(ctx, `dup:day-block:${dayId}`, `day:${dayId}`, block.id, path);
+    const label = `phase:${phaseId}/week:${weekId}/day:${dayId}`;
+    check(ctx, `dup:block:${phaseId}:${weekId}:${dayId}`, label, block.id, path);
   },
 
   enterActivity(ctx, activity, path) {
+    // Same reasoning as enterBlock — activity IDs scoped to (phase, week, day).
+    const phaseId = getScopeId(ctx, 'cur:phase');
+    const weekId = getScopeId(ctx, 'cur:week');
     const dayId = getScopeId(ctx, 'cur:day');
-    check(ctx, `dup:day-act:${dayId}`, `day:${dayId}`, activity.id, path);
+    const label = `phase:${phaseId}/week:${weekId}/day:${dayId}`;
+    check(ctx, `dup:activity:${phaseId}:${weekId}:${dayId}`, label, activity.id, path);
   },
 };
