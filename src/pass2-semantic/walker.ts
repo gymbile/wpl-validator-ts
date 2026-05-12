@@ -22,6 +22,7 @@ export interface WalkPlan {
 
 export interface WalkPhase {
   id?: unknown;
+  name?: unknown;
   weeks?: unknown;
   duration?: { value?: unknown; unit?: unknown } | null;
 }
