@@ -1,4 +1,5 @@
 import type { SemanticRule } from '../walker.js';
+import type { RepairHint } from '../../types.js';
 
 /**
  * Allowed activity types per block type.
@@ -38,6 +39,20 @@ export const activityBlockMismatch: SemanticRule = {
     if (!actType) return; // no type — schema validator will catch it
 
     if (!allowed.has(actType)) {
+      const allowedArr = [...allowed];
+      const activityName =
+        typeof activity.name === 'string' ? activity.name : undefined;
+      const repair_hint: RepairHint = {
+        action: 'fix_activity',
+        // The repair attaches to the offending activity itself — the agent
+        // either changes its `type` to an allowed value or moves it to a
+        // block whose type accepts the current activity type.
+        target_path: path,
+        ...(activityName ? { parent_name: activityName } : {}),
+        allowed_values: allowedArr,
+        expected_shape: `activity.type must be one of: ${allowedArr.join(', ')} (block type: ${blockType})`,
+      };
+
       ctx.emit({
         path,
         code: 'ACTIVITY_BLOCK_MISMATCH',
@@ -46,8 +61,9 @@ export const activityBlockMismatch: SemanticRule = {
         meta: {
           activity_type: actType,
           block_type: blockType,
-          allowed: [...allowed],
+          allowed: allowedArr,
         },
+        repair_hint,
       });
     }
   },

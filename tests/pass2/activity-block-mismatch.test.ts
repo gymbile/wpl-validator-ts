@@ -168,4 +168,19 @@ describe('rule: ACTIVITY_BLOCK_MISMATCH', () => {
     expect(errors[0]!.meta!.allowed).toContain('recovery');
     expect(errors[0]!.meta!.allowed).not.toContain('nutrition');
   });
+
+  // --- repair_hint (1.7.0) ---
+
+  it('attaches repair_hint with action=fix_activity and allowed_values', () => {
+    const errors = runPass2(makeBlock('warmup', 'nutrition'), { rules: [activityBlockMismatch] });
+    expect(errors).toHaveLength(1);
+    const hint = errors[0]!.repair_hint;
+    expect(hint).toBeDefined();
+    expect(hint!.action).toBe('fix_activity');
+    expect(hint!.target_path).toBe('/plan/phases/0/weeks/0/days/0/blocks/0/activities/0');
+    expect(hint!.allowed_values).toContain('cardio');
+    expect(hint!.allowed_values).toContain('recovery');
+    expect(hint!.allowed_values).not.toContain('nutrition');
+    expect(hint!.expected_shape).toContain('warmup');
+  });
 });

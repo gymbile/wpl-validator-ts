@@ -73,4 +73,40 @@ describe('rule: INVALID_PRESCRIPTION', () => {
     }), { rules: [invalidPrescription] });
     expect(errors).toEqual([]);
   });
+
+  // --- repair_hint (1.7.0) ---
+
+  it('repair_hint for sets_reps missing sets+reps lists what is missing', () => {
+    const errors = runPass2(planWithActivity({
+      id: 'a1', type: 'exercise', exercise_ref: 'push_up',
+      prescription: { type: 'sets_reps' },
+    }), { rules: [invalidPrescription] });
+    const hint = errors[0]!.repair_hint;
+    expect(hint).toBeDefined();
+    expect(hint!.action).toBe('fix_prescription');
+    expect(hint!.target_path).toBe('/plan/phases/0/weeks/0/days/0/blocks/0/activities/0/prescription');
+    expect(hint!.missing).toEqual(['sets', 'reps']);
+    expect(hint!.expected_shape).toContain('sets_reps');
+  });
+
+  it('repair_hint for missing type lists allowed_values', () => {
+    const errors = runPass2(planWithActivity({
+      id: 'a1', type: 'exercise', exercise_ref: 'push_up',
+      prescription: { sets: 3, reps: 10 },
+    }), { rules: [invalidPrescription] });
+    const hint = errors[0]!.repair_hint;
+    expect(hint!.allowed_values).toContain('sets_reps');
+    expect(hint!.allowed_values).toContain('time');
+    expect(hint!.allowed_values).toContain('intervals');
+  });
+
+  it('repair_hint for unknown type lists allowed_values', () => {
+    const errors = runPass2(planWithActivity({
+      id: 'a1', type: 'exercise', exercise_ref: 'push_up',
+      prescription: { type: 'forever' },
+    }), { rules: [invalidPrescription] });
+    const hint = errors[0]!.repair_hint;
+    expect(hint!.action).toBe('fix_prescription');
+    expect(hint!.allowed_values).toContain('time');
+  });
 });

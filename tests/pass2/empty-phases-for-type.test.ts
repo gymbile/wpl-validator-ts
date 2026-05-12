@@ -43,4 +43,21 @@ describe('rule: EMPTY_PHASES_FOR_TYPE', () => {
     const errors = runPass2(plan, { rules: [emptyPhasesForType] });
     expect(errors).toEqual([]);
   });
+
+  // --- repair_hint (1.7.0) ---
+
+  it('attaches repair_hint with action=add_phases for empty workout plan', () => {
+    const plan = {
+      plan: { id: 'p', name: 'P', type: 'workout', visibility: 'private', metadata: {}, goals: [], phases: [] },
+    };
+    const errors = runPass2(plan, { rules: [emptyPhasesForType] });
+    const hint = errors[0]!.repair_hint;
+    expect(hint).toBeDefined();
+    expect(hint!.action).toBe('add_phases');
+    expect(hint!.target_path).toBe('/plan/phases');
+    expect(hint!.expected_count).toBe(1);
+    expect(hint!.actual_count).toBe(0);
+    expect(hint!.expected_shape).toContain('workout');
+    expect(hint!.context_dsl_example).toContain('PHASE');
+  });
 });
