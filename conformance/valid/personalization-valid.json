@@ -59,7 +59,7 @@
             {
               "type": "modify_intensity",
               "scope": "plan",
-              "delta_percent": -10
+              "factor": 0.9
             },
             {
               "type": "increase_rest",

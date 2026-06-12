@@ -78,7 +78,7 @@
             {
               "type": "modify_intensity",
               "scope": "day",
-              "delta_percent": -10
+              "factor": 0.9
             },
             {
               "type": "increase_rest",

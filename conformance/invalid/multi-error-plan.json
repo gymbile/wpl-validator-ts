@@ -8,31 +8,6 @@
     "visibility": "private",
     "metadata": {},
     "goals": [],
-    "personalization": {
-      "inputs": [
-        {
-          "id": "age",
-          "type": "number",
-          "source": "user.age"
-        }
-      ],
-      "rules": [
-        {
-          "id": "rule_1",
-          "condition": {
-            "field": "age",
-            "op": "gt",
-            "value": 60
-          },
-          "actions": [
-            {
-              "type": "modify_intensity",
-              "scope": "supercluster"
-            }
-          ]
-        }
-      ]
-    },
     "phases": [
       {
         "id": "phase_1",
@@ -62,9 +37,9 @@
             "order": 2,
             "days": [
               {
-                "id": "d2",
-                "day_of_week": 1,
-                "name": "D2",
+                "id": "d1",
+                "day_of_week": 2,
+                "name": "D2 (dup day)",
                 "type": "rest"
               }
             ]
