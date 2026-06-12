@@ -28,4 +28,14 @@ describe('collides', () => {
     expect(collides('deep squat', 'deep_squat')).toBe(false);
     expect(collides('squat', 'deep_squat')).toBe(false);
   });
+  it('matches compound plurals to their singular (the _ups family)', () => {
+    for (const [a, b] of [['push_ups','push_up'],['pull ups','pull_up'],['sit-ups','sit_up'],['chin ups','chin_up'],['press ups','press_up']]) {
+      expect(collides(a, b), `${a} vs ${b}`).toBe(true);
+      expect(collides(b, a), `${b} vs ${a}`).toBe(true); // symmetric
+    }
+  });
+  it('does not over-stem the canonical short word "abs"', () => {
+    expect(collides('abs', 'abs')).toBe(true);
+    expect(collides('Abs', 'abs')).toBe(true);
+  });
 });

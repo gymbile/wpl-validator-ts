@@ -1,8 +1,13 @@
 // Fuzzy exercise-name matcher used by the enforcement stripper. Ported from
-// wpl-eval src/scoring/blacklist.ts (v0.6) so the shipped stripper removes
-// exactly what the published benchmark's scorer would flag. Pure functions,
-// no dependencies. Any change here is a behavior change to the safety
-// contract — add a conformance fixture with every change.
+// wpl-eval src/scoring/blacklist.ts (v0.6) with one DELIBERATE divergence:
+// compound short plurals (the "_ups" family — push_ups, pull_ups, sit_ups,
+// chin_ups, press_ups) are now stemmed to their singular form via SHORT_PLURALS.
+// This fix is applied identically in BOTH wpl-validator-ts/src/enforce/matcher.ts
+// AND wpl-eval/src/scoring/blacklist.ts; the two MUST stay in sync. Both now
+// differ from the FROZEN v0.6 numbers for _ups exercises — this is a real
+// fail-open fix, disclosed in CHANGELOG.md and docs/METHODOLOGY.md.
+// Pure functions, no dependencies. Any change here is a behavior change to the
+// safety contract — add a conformance fixture with every change.
 
 // Normalise a free-text name into a lowercase, underscore-separated token so
 // "Jump Squat" / "jump-squat" / "jump_squat" all collide against the same
@@ -19,12 +24,19 @@ export function normalize(s: string): string {
     .join("_");
 }
 
+// Short plurals (<=3 chars) that ARE genuine plurals and must still stem —
+// the length guard below otherwise protects them. Without this, compound
+// names like "push_ups" never match "push_up" (the trailing "ups" stays).
+// "abs" is deliberately NOT here: it is a canonical muscle-group token, not
+// a plural to fold to "ab".
+const SHORT_PLURALS: Record<string, string> = { ups: "up" };
+
 // Strip a trailing English plural 's' so "squats" matches "squat" and "rows"
 // matches "row". Keep `ss`/`us`/`is` endings to avoid butchering "press",
 // "biceps", "lateralis". Tokens of three chars or fewer are left alone so
-// short words like "abs" survive.
+// short words like "abs" survive (with the explicit SHORT_PLURALS exceptions).
 function stemPlural(token: string): string {
-  if (token.length <= 3) return token;
+  if (token.length <= 3) return SHORT_PLURALS[token] ?? token;
   if (token.endsWith("ss") || token.endsWith("us") || token.endsWith("is")) return token;
   if (token.endsWith("ies")) return token.slice(0, -3) + "y";
   if (token.endsWith("es") && token.length > 4) return token.slice(0, -2);

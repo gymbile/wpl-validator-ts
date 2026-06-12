@@ -9,6 +9,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [1.8.0] — 2026-06-12
 
+### Fixed
+- Matcher now stems compound short plurals (`push_ups` → `push_up`, and the full
+  `_ups` family: `pull_ups`, `sit_ups`, `chin_ups`, `press_ups`). This is a
+  deliberate divergence from the v0.6 scorer's `stemPlural` ≤3-char exemption,
+  which left "ups" (3 chars) unstemmed and caused compound plurals to evade the
+  blacklist silently — a fail-open in the safety scorer. The fix is applied
+  identically in `wpl-validator-ts/src/enforce/matcher.ts` and
+  `wpl-eval/src/scoring/blacklist.ts`; both now differ from the frozen v0.6
+  results for `_ups`-family exercises. The canonical short token `abs` is
+  explicitly NOT stemmed. Conformance fixture: `forbid-fuzzy-plural.json`.
+
 ### Added
 - **Pass-3 enforcement engine**: `enforce(plan, context, rules, options)` evaluates
   personalization rules against a `ClientContext` and strips forbidden exercises
