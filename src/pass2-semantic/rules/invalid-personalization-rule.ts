@@ -1,6 +1,7 @@
 import type { SemanticRule, WalkContext } from '../walker.js';
 
 const ACTION_TYPES = new Set([
+  'forbid_exercise',
   'modify_intensity', 'add_warmup_time', 'increase_rest', 'reduce_sets', 'reduce_reps',
   'replace_exercise', 'exclude_exercise', 'modify_exercise', 'use_schedule', 'add_activity',
 ]);
