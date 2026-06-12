@@ -9,6 +9,7 @@ export function runPass2(input: unknown, opts: RunPass2Options): ValidationError
   const errors: ValidationError[] = [];
   const options: ValidationOptions = {};
   if (opts.catalog !== undefined) options.catalog = opts.catalog;
+  if (opts.requireCatalog !== undefined) options.requireCatalog = opts.requireCatalog;
   const ctx: WalkContext = {
     options,
     emit: (err) => errors.push(err),
