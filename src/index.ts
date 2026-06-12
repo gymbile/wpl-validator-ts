@@ -1,4 +1,4 @@
-export { enforce, evaluateRules, firingActions, collides } from './enforce/index.js';
+export { enforce, evaluateRules, firingActions, collides, computeCycleDay } from './enforce/index.js';
 export type {
   ClientContext, Cycle, Rule, RuleAction, Condition, SimpleCondition, CompoundCondition,
   EvaluatedRule, EnforcementResult, EnforcementDiagnostic, StrippedActivity, EnforceOptions,

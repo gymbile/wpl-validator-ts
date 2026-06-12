@@ -7,6 +7,65 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.8.0] — 2026-06-12
+
+### Added
+- **Pass-3 enforcement engine**: `enforce(plan, context, rules, options)` evaluates
+  personalization rules against a `ClientContext` and strips forbidden exercises
+  from the compiled plan, with per-activity attribution (`stripped[]`) and
+  fail-closed diagnostics (`UNKNOWN_CONDITION_FIELD`, `UNKNOWN_ACTION_TYPE`).
+  Ported from the wpl-eval Lane B runtime so the shipped engine matches the
+  published v0.6 benchmark. Exports: `enforce`, `evaluateRules`, `firingActions`,
+  `collides`, `computeCycleDay` + types.
+- Enforcement conformance fixtures (`conformance/enforcement/`) — the
+  "contraindicated exercise must not survive" invariant is now a tested contract.
+- Strict catalog mode: `validate(plan, { requireCatalog: true })` fails with
+  `CATALOG_REQUIRED` instead of silently skipping entity resolution.
+- `forbid_exercise` accepted by INVALID_PERSONALIZATION_RULE; `in`/`not_in`
+  condition ops; nested compound conditions (schema 1.7.0 sync).
+
+### Changed
+- Catalog ref resolution is case-insensitive.
+- Vendored schema: 1.7.0.
+
+## [1.7.1] — 2026-05-12
+
+### Added
+- `RepairHint` attached to three more high-value rules — `ACTIVITY_BLOCK_MISMATCH`,
+  `INVALID_PRESCRIPTION`, and `EMPTY_PHASES_FOR_TYPE` — following the same agentic
+  repair pattern introduced in 1.7.0. Each hint carries `action`, `target_path`, and
+  rule-specific slots (`missing`, `allowed_values`, `expected_shape`,
+  `context_dsl_example`) so orchestrators can construct targeted re-generation
+  prompts without parsing free-text messages.
+
+## [1.7.0] — 2026-05-12
+
+### Added
+- `RepairHint` interface (new public type): machine-actionable repair guidance
+  attached to `ValidationError.repair_hint`. Fields: `action`, `target_path`,
+  `parent_name`, `missing`, `expected_count`, `actual_count`, `allowed_values`,
+  `expected_shape`, `context_dsl_example`. Designed for agentic completion loops
+  that need to construct targeted re-generation prompts without parsing free-text
+  messages.
+- `PHASE_DURATION_MISMATCH` now populates `repair_hint` with `action: 'add_weeks'`,
+  `expected_count`/`actual_count`, `missing` (week numbers to generate), and a
+  `context_dsl_example` DSL snippet.
+- `getRepairHints(result)` top-level helper: flattens all `repair_hint` fields
+  from a `ValidationResult` into a single array — agents call once instead of
+  inspecting every error's optional field.
+
+## [1.6.7] — 2026-05-12
+
+### Fixed
+- `DUPLICATE_ID` for blocks and activities now scopes uniqueness to
+  `(phase, week, day)` instead of just `day`. Day IDs such as `day_1` are
+  positional within a week and repeat across weeks by design; the previous
+  scope (`day:<dayId>`) caused a flood of false-positive `DUPLICATE_ID` errors
+  on every multi-week plan — a 12-week programme with a daily `warmup_block`
+  produced ~30+ spurious findings. The new scope key is
+  `phase:<phaseId>/week:<weekId>/day:<dayId>`. Within-day duplicates are still
+  flagged correctly.
+
 ## [1.6.6] — 2026-05-05
 
 ### Changed
