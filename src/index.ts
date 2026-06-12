@@ -1,3 +1,9 @@
+export { enforce, evaluateRules, firingActions, collides } from './enforce/index.js';
+export type {
+  ClientContext, Cycle, Rule, RuleAction, Condition, SimpleCondition, CompoundCondition,
+  EvaluatedRule, EnforcementResult, EnforcementDiagnostic, StrippedActivity, EnforceOptions,
+} from './enforce/types.js';
+
 import { runPass1 } from './pass1-schema.js';
 import { runPass2 } from './pass2-semantic/index.js';
 import { ALL_RULES } from './pass2-semantic/rules/index.js';
