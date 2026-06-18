@@ -60,6 +60,56 @@ const result = validate(plan, {
 
 If no catalog is provided, `UNRESOLVED_REF` checks are skipped.
 
+### Strict catalog mode
+
+Pass `requireCatalog: true` to fail with `CATALOG_REQUIRED` when no catalog is supplied instead of silently skipping ref checks:
+
+```ts
+const result = validate(plan, { requireCatalog: true });
+// If catalog is absent → result.errors includes CATALOG_REQUIRED
+```
+
+## Enforcement (Pass 3)
+
+After validating a plan, call `enforce()` to strip exercises that a personalization rule forbids for a specific client. This is the runtime safety pass: `validate()` checks that a plan is well-formed; `enforce()` makes it safe *for this client*.
+
+```ts
+import {
+  enforce,
+  type ClientContext,
+  type Rule,
+  type EnforcementResult,
+} from '@gymbile/wpl-validator';
+
+const plan = JSON.parse(planJson); // already validated
+
+const ctx: ClientContext = {
+  injuries: ['lower_back'],
+  equipment: ['dumbbells'],
+};
+
+const rules: Rule[] = [
+  {
+    id: 'no-deadlift-lower-back',
+    condition: { field: 'injuries', op: 'contains', value: 'lower_back' },
+    actions: [{ type: 'forbid_exercise', exercise: 'deadlift' }],
+  },
+];
+
+const result: EnforcementResult = enforce(plan, ctx, rules);
+
+// result.plan     — deep-cloned plan with forbidden exercises removed
+// result.stripped — [{ exercise, matched_rule, path }, ...]
+// result.diagnostics — fail-closed warnings (unknown fields / action types)
+// result.evaluated_rules — per-rule condition evaluation detail
+
+if (result.stripped.length > 0) {
+  console.warn('Removed exercises:', result.stripped.map((s) => s.exercise));
+}
+```
+
+`enforce()` is fail-closed: if a rule references an unknown `ClientContext` field, it emits an `UNKNOWN_CONDITION_FIELD` diagnostic and treats the condition as unmet (the exercise is kept, not silently stripped).
+
 ## Severity semantics
 
 `result.valid` is `true` unless at least one finding has `severity: "error"`. Findings with `severity: "warning"` (currently only `PHASE_DURATION_MISMATCH`) appear in `result.errors` but do **not** invalidate the plan — they're advisory.

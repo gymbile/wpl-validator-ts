@@ -15,7 +15,7 @@ jobs:
         run: |
           latest=$(git ls-remote --tags https://github.com/gymbile/wpl.git \
                    | grep 'refs/tags/v' | grep -v '\^{}' \
-                   | sort -V | tail -1 | awk '{print $2}' | sed 's|refs/tags/||')
+                   | sed 's|.*refs/tags/||' | sort -V | tail -1)
           if [ -z "$latest" ]; then
             echo "::error::Could not resolve latest tag from gymbile/wpl"
             exit 1

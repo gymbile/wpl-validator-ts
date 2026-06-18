@@ -10,13 +10,13 @@
     }
   },
   {
-    "code": "INVALID_PERSONALIZATION_RULE",
-    "path": "/plan/personalization/rules/0/actions/0",
+    "code": "DUPLICATE_ID",
+    "path": "/plan/phases/0/weeks/1/days/0",
     "severity": "error",
     "meta": {
-      "reason": "invalid_action_scope",
-      "field": "scope",
-      "value": "supercluster"
+      "duplicate_id": "d1",
+      "scope": "week:week_1",
+      "first_occurrence": "/plan/phases/0/weeks/0/days/0"
     }
   }
 ]

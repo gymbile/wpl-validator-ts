@@ -64,4 +64,38 @@ describe('rule: UNRESOLVED_REF', () => {
     });
     expect(errors[0]?.meta).toMatchObject({ ref_kind: 'meal', ref_value: 'unicorn_porridge' });
   });
+
+  it('errors with CATALOG_REQUIRED when requireCatalog is set and no catalog given', () => {
+    const errors = runPass2(wrap({
+      id: 'a1', type: 'exercise', exercise_ref: 'push_up',
+      prescription: { type: 'sets_reps', sets: 3, reps: 10 },
+    }), {
+      rules: [unresolvedRef],
+      requireCatalog: true,
+    });
+    expect(errors.some((e) => e.code === 'CATALOG_REQUIRED')).toBe(true);
+  });
+
+  it('does not emit CATALOG_REQUIRED when a catalog is provided', () => {
+    const errors = runPass2(wrap({
+      id: 'a1', type: 'exercise', exercise_ref: 'push_up',
+      prescription: { type: 'sets_reps', sets: 3, reps: 10 },
+    }), {
+      rules: [unresolvedRef],
+      requireCatalog: true,
+      catalog: { exercises: new Set(['push_up']) },
+    });
+    expect(errors.some((e) => e.code === 'CATALOG_REQUIRED')).toBe(false);
+  });
+
+  it('resolves refs case-insensitively with a warning-free match', () => {
+    const errors = runPass2(wrap({
+      id: 'a1', type: 'exercise', exercise_ref: 'Push_Up',
+      prescription: { type: 'sets_reps', sets: 3, reps: 10 },
+    }), {
+      rules: [unresolvedRef],
+      catalog: { exercises: new Set(['push_up']) },
+    });
+    expect(errors.some((e) => e.code === 'UNRESOLVED_REF')).toBe(false);
+  });
 });

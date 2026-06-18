@@ -2,6 +2,7 @@ export type ErrorCode =
   | 'SCHEMA_VIOLATION'
   | 'DUPLICATE_ID'
   | 'UNRESOLVED_REF'
+  | 'CATALOG_REQUIRED'
   | 'EMPTY_PHASES_FOR_TYPE'
   | 'MISSING_EXERCISE_REF'
   | 'INVALID_PRESCRIPTION'
@@ -75,4 +76,11 @@ export interface Catalog {
 
 export interface ValidationOptions {
   catalog?: Catalog;
+  /**
+   * Production posture for safety-governed deployments: when true and no
+   * catalog is supplied while the plan contains entity refs, validation
+   * fails with CATALOG_REQUIRED instead of silently skipping resolution.
+   * Default false (backward compatible).
+   */
+  requireCatalog?: boolean;
 }

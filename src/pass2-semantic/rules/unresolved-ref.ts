@@ -7,20 +7,45 @@ const REF_KINDS: Array<{ field: string; kind: string; catalogKey: keyof Catalog 
   { field: 'meditation_ref', kind: 'meditation', catalogKey: 'meditations' },
 ];
 
+// Catalog sets are matched case-insensitively: LLM emitters routinely vary
+// casing ("Push_Up" vs "push_up") and a casing miss must not read as
+// "exercise does not exist".
+function hasRef(set: ReadonlySet<string> | undefined, ref: string): boolean {
+  if (!set) return false;
+  if (set.has(ref)) return true;
+  const lower = ref.toLowerCase();
+  for (const entry of set) {
+    if (entry.toLowerCase() === lower) return true;
+  }
+  return false;
+}
+
 export const unresolvedRef: SemanticRule = {
   code: 'UNRESOLVED_REF',
   enterActivity(ctx, activity, path) {
     const catalog = ctx.options.catalog;
-    if (!catalog) return;
+    const requireCatalog = ctx.options.requireCatalog;
 
     for (const { field, kind, catalogKey } of REF_KINDS) {
       const refValue = activity[field];
       if (refValue === undefined) continue;
       if (typeof refValue !== 'string') continue;
 
-      const catalogSet = catalog[catalogKey];
-      const resolved = catalogSet?.has(refValue);
-      if (!resolved) {
+      if (!catalog) {
+        // No catalog supplied — fail-open by default; fail-closed in strict mode.
+        if (requireCatalog) {
+          ctx.emit({
+            path: `${path}/${field}`,
+            code: 'CATALOG_REQUIRED',
+            message: `catalog is required in strict mode but was not provided; cannot resolve ${kind} '${refValue}'`,
+            severity: 'error',
+            meta: { ref_kind: kind, ref_value: refValue },
+          });
+        }
+        continue;
+      }
+
+      if (!hasRef(catalog[catalogKey], refValue)) {
         ctx.emit({
           path: `${path}/${field}`,
           code: 'UNRESOLVED_REF',

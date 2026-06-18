@@ -112,4 +112,23 @@ describe('rule: INVALID_PERSONALIZATION_RULE', () => {
     }), { rules: [invalidPersonalizationRule] });
     expect(errors).toEqual([]);
   });
+
+  it('accepts forbid_exercise as a valid action type', () => {
+    const errors = runPass2(wrap({
+      id: 'r1',
+      condition: { field: 'injuries', op: 'contains', value: 'torn_meniscus' },
+      actions: [{ type: 'forbid_exercise', exercise: 'barbell_back_squat' }],
+    }), { rules: [invalidPersonalizationRule] });
+    const errs = errors.filter((e) => e.code === 'INVALID_PERSONALIZATION_RULE');
+    expect(errs).toHaveLength(0);
+  });
+
+  it('accepts in/not_in condition ops without raising INVALID_PERSONALIZATION_RULE', () => {
+    const errors = runPass2(wrap({
+      id: 'r2',
+      condition: { field: 'cycle_day', op: 'in', value: [1, 2, 3] },
+      actions: [{ type: 'forbid_exercise', exercise: 'heavy_deadlift' }],
+    }), { rules: [invalidPersonalizationRule] });
+    expect(errors.filter((e) => e.code === 'INVALID_PERSONALIZATION_RULE')).toHaveLength(0);
+  });
 });
