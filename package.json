@@ -24,6 +24,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
+    "gen:matcher-vocab": "node scripts/gen-matcher-vocab.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
