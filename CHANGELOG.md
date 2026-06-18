@@ -7,6 +7,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.9.0] — 2026-06-18
+
+### Changed
+- Matcher vocabulary SSOT: `QUALIFIER_TOKENS`/`SHORT_PLURALS` are now generated
+  from a vendored copy of `wpl/data/matcher-vocab.json` via
+  `npm run gen:matcher-vocab`; adds drift-check workflow. Matcher logic
+  (`normalize`/`stemPlural`/`coreTokens`/`collides`) unchanged.
+
 ## [1.8.0] — 2026-06-12
 
 ### Fixed
