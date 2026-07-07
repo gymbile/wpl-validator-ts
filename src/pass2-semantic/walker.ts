@@ -12,6 +12,7 @@ export interface WalkContext {
 export interface WalkPlan {
   id?: unknown;
   type?: unknown;
+  goals?: unknown;
   phases?: unknown;
   personalization?: { rules?: unknown } | null;
   progress?: {

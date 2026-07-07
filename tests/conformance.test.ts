@@ -65,7 +65,9 @@ describe('Conformance suite', () => {
     it(`valid/${file}: validates with no errors`, () => {
       const plan = loadJson(resolve(conformanceDir, 'valid', file));
       const result = validate(plan);
-      expect(result.errors).toEqual([]);
+      // Valid fixtures must have no severity:'error' entries (warnings are allowed).
+      const hardErrors = result.errors.filter((e) => e.severity === 'error');
+      expect(hardErrors).toEqual([]);
       expect(result.valid).toBe(true);
     });
   }
