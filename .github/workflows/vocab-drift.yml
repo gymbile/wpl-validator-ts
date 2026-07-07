@@ -1,0 +1,79 @@
+name: Vocabulary drift check
+
+on:
+  schedule:
+    - cron: '0 14 * * 1'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  matcher-vocab-vendored:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read vendored version
+        id: vendored
+        run: echo "version=$(cat matcher-vocab-version.txt)" >> $GITHUB_OUTPUT
+      - name: Diff vendored matcher-vocab.json against the upstream release it pins
+        run: |
+          tag="v${{ steps.vendored.outputs.version }}"
+          curl -sSL "https://raw.githubusercontent.com/gymbile/wpl/${tag}/data/matcher-vocab.json" -o /tmp/upstream.json
+          if ! diff -q src/data/matcher-vocab.json /tmp/upstream.json > /dev/null; then
+            echo "::error::Vendored matcher-vocab.json drifted from gymbile/wpl@${tag}."
+            exit 1
+          fi
+
+  goal-categories-vendored:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read vendored version
+        id: vendored
+        run: echo "version=$(cat goal-categories-version.txt)" >> $GITHUB_OUTPUT
+      - name: Diff vendored goal-categories.json against the upstream release it pins
+        run: |
+          tag="v${{ steps.vendored.outputs.version }}"
+          curl -sSL "https://raw.githubusercontent.com/gymbile/wpl/${tag}/data/goal-categories.json" -o /tmp/upstream.json
+          if ! diff -q src/data/goal-categories.json /tmp/upstream.json > /dev/null; then
+            echo "::error::Vendored goal-categories.json drifted from gymbile/wpl@${tag}."
+            exit 1
+          fi
+
+  dietary-tags-vendored:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read vendored version
+        id: vendored
+        run: echo "version=$(cat dietary-tags-version.txt)" >> $GITHUB_OUTPUT
+      - name: Diff vendored dietary-tags.json against the upstream release it pins
+        run: |
+          tag="v${{ steps.vendored.outputs.version }}"
+          curl -sSL "https://raw.githubusercontent.com/gymbile/wpl/${tag}/data/dietary-tags.json" -o /tmp/upstream.json
+          if ! diff -q src/data/dietary-tags.json /tmp/upstream.json > /dev/null; then
+            echo "::error::Vendored dietary-tags.json drifted from gymbile/wpl@${tag}."
+            exit 1
+          fi
+
+  codegen-no-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm run gen:matcher-vocab && npm run gen:goal-categories && npm run gen:dietary-tags
+      - name: Fail if any generated vocab drifted
+        run: |
+          changed=$(git diff --name-only -- \
+            src/enforce/matcher-vocab.generated.ts \
+            src/data/goal-categories.generated.ts \
+            src/data/dietary-tags.generated.ts)
+          if [ -n "$changed" ]; then
+            echo "::error::Generated vocab files are out of date: $changed — re-run the relevant gen: script and commit."
+            git --no-pager diff -- \
+              src/enforce/matcher-vocab.generated.ts \
+              src/data/goal-categories.generated.ts \
+              src/data/dietary-tags.generated.ts
+            exit 1
+          fi

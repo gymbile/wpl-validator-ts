@@ -1,6 +1,6 @@
 {
   "name": "@gymbile/wpl-validator",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "Reference TypeScript validator for WPL (Wellness Plan Language) — JSON Schema + semantic invariants",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -25,6 +25,8 @@
   "scripts": {
     "build": "tsup",
     "gen:matcher-vocab": "node scripts/gen-matcher-vocab.mjs",
+    "gen:goal-categories": "node scripts/gen-goal-categories.mjs",
+    "gen:dietary-tags": "node scripts/gen-dietary-tags.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
