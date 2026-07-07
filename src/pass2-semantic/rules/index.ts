@@ -1,7 +1,9 @@
 export { activityBlockMismatch } from './activity-block-mismatch.js';
 export { cyclicSubplan } from './cyclic-subplan.js';
+export { dietaryTagsOffVocab } from './dietary-tags-off-vocab.js';
 export { duplicateId } from './duplicate-id.js';
 export { emptyPhasesForType } from './empty-phases-for-type.js';
+export { goalCategoryOffVocab } from './goal-category-off-vocab.js';
 export { invalidPersonalizationRule } from './invalid-personalization-rule.js';
 export { invalidPointsRule } from './invalid-points-rule.js';
 export { invalidPrescription } from './invalid-prescription.js';
@@ -10,8 +12,10 @@ export { unresolvedRef } from './unresolved-ref.js';
 
 import { activityBlockMismatch } from './activity-block-mismatch.js';
 import { cyclicSubplan } from './cyclic-subplan.js';
+import { dietaryTagsOffVocab } from './dietary-tags-off-vocab.js';
 import { duplicateId } from './duplicate-id.js';
 import { emptyPhasesForType } from './empty-phases-for-type.js';
+import { goalCategoryOffVocab } from './goal-category-off-vocab.js';
 import { invalidPersonalizationRule } from './invalid-personalization-rule.js';
 import { invalidPointsRule } from './invalid-points-rule.js';
 import { invalidPrescription } from './invalid-prescription.js';
@@ -23,8 +27,10 @@ import type { SemanticRule } from '../walker.js';
 export const ALL_RULES: SemanticRule[] = [
   activityBlockMismatch,
   cyclicSubplan,
+  dietaryTagsOffVocab,
   duplicateId,
   emptyPhasesForType,
+  goalCategoryOffVocab,
   invalidPersonalizationRule,
   invalidPointsRule,
   invalidPrescription,

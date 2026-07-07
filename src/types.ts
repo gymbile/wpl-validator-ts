@@ -10,7 +10,9 @@ export type ErrorCode =
   | 'INVALID_POINTS_RULE'
   | 'PHASE_DURATION_MISMATCH'
   | 'CYCLIC_SUBPLAN'
-  | 'ACTIVITY_BLOCK_MISMATCH';
+  | 'ACTIVITY_BLOCK_MISMATCH'
+  | 'GOAL_CATEGORY_OFF_VOCAB'
+  | 'DIETARY_TAGS_OFF_VOCAB';
 
 export type Severity = 'error' | 'warning';
 
