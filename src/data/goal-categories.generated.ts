@@ -1,6 +1,6 @@
 // GENERATED — do not edit. Run `npm run gen:goal-categories` to regenerate.
 // Source of truth: wpl/data/goal-categories.json (vendored at src/data/goal-categories.json).
-// Vocab version: 1.0.0
+// Vocab version: 1.1.0
 
 export const GOAL_CATEGORIES: readonly string[] = [
   "weight_loss",
@@ -11,6 +11,7 @@ export const GOAL_CATEGORIES: readonly string[] = [
   "mental_wellness",
   "nutrition",
   "habit",
+  "recovery",
   "general_fitness",
   "custom",
 ];
